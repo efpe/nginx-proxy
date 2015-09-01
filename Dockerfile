@@ -11,7 +11,8 @@ RUN apt-get update \
 
 # Configure Nginx and apply fix for very long server names
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf \
- && sed -i 's/^http {/&\n    server_names_hash_bucket_size 128;/g' /etc/nginx/nginx.conf
+ && sed -i 's/^http {/&\n    server_names_hash_bucket_size 128;\n    log_format custom \x27$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" "$http_x_forwarded_for" $request_time $upstream_response_time $pipe "$http_x_correlation_id"\x27;\n/g' /etc/nginx/nginx.conf \
+ && sed -i 's/access.log  main;/access.log  custom;/g' /etc/nginx/nginx.conf
 
 # Install Forego
 RUN wget -P /usr/local/bin https://godist.herokuapp.com/projects/ddollar/forego/releases/current/linux-amd64/forego \
